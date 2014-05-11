@@ -8,3 +8,5 @@
 
 - include: format.yml tags=format
   when: build_disk_mounted | failed
+
+- include: syslinux.yml tags=syslinux
