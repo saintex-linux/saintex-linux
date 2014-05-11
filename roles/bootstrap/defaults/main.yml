@@ -1,0 +1,7 @@
+---
+
+bootstrap_build_disk: "/dev/sdb"
+bootstrap_root_partition: "{{ bootstrap_build_disk }}1"
+
+bootstrap_mount_point: "/mnt"
+bootstrap_mount_options: "noatime,errors=remount-ro"

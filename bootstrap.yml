@@ -1,0 +1,7 @@
+---
+
+- hosts: bootstrap
+  gather_facts: false
+  roles:
+    - { role: python, tags: ["python"] }
+    - { role: bootstrap, tags: ["bootstrap"] }

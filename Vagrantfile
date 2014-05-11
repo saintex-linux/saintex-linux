@@ -8,6 +8,7 @@ VAGRANT_ROOT = File.dirname(File.expand_path(__FILE__))
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = 'arch'
   config.vm.hostname = 'bootstrap.saintexlinux.com'
+  config.vm.network :private_network, ip: '192.168.40.40'
 
   config.vm.provider 'virtualbox' do |vb|
     file_to_disk = File.join(VAGRANT_ROOT, 'saintex-linux.vdi')
