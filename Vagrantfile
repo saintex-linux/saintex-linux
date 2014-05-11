@@ -11,6 +11,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :private_network, ip: '192.168.40.40'
 
   config.vm.provider 'virtualbox' do |vb|
+    vb.customize ['modifyvm', :id, '--memory', '2048']
+    vb.customize ['modifyvm', :id, '--ioapic', 'on', '--cpus', '4']
+
     file_to_disk = File.join(VAGRANT_ROOT, 'saintex-linux.vdi')
     unless File.exist?(file_to_disk)
       vb.customize ['createhd', '--filename', file_to_disk, '--size', 8 * 1024]
