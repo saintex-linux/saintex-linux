@@ -1,7 +1,12 @@
 ---
 
-bootstrap_build_disk: "/dev/sdb"
-bootstrap_root_partition: "{{ bootstrap_build_disk }}1"
+kernel_version: 3.14.2
+kernel_mirror: "https://www.kernel.org/pub/linux/kernel/v3.x"
+kernel_filename: "linux-{{ kernel_version }}.tar.xz"
+kernel_dir: "/usr/local/src"
+kernel_image: "{{ kernel_dir }}/linux-{{ kernel_version }}/arch/x86/boot/bzImage"
 
-bootstrap_mount_point: "/mnt"
-bootstrap_mount_options: "noatime,errors=remount-ro"
+build_disk: "/dev/sdb"
+build_root_partition: "{{ build_disk }}1"
+build_mount_point: "/mnt"
+build_mount_options: "noatime,errors=remount-ro"

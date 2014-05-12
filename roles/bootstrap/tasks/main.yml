@@ -1,7 +1,7 @@
 ---
 
 - name: check the status of the build disk mount point
-  command: /usr/bin/mountpoint -q {{ bootstrap_mount_point }}
+  command: /usr/bin/mountpoint -q {{ build_mount_point }}
   ignore_errors: true
   changed_when: false
   register: build_disk_mounted
@@ -9,4 +9,6 @@
 - include: format.yml tags=format
   when: build_disk_mounted | failed
 
+- include: kernel.yml tags=kernel
+#- include: initramfs.yml tags=initramfs
 - include: syslinux.yml tags=syslinux

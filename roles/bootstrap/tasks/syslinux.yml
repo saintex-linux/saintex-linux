@@ -6,40 +6,40 @@
 
 - name: create the syslinux directory
   sudo: true
-  file: path={{ bootstrap_mount_point }}/boot/syslinux state=directory
+  file: path={{ build_mount_point }}/boot/syslinux state=directory
 
 - name: check the status of bootloader
-  command: /usr/bin/test -f {{ bootstrap_mount_point }}/boot/syslinux/ldlinux.sys
+  command: /usr/bin/test -f {{ build_mount_point }}/boot/syslinux/ldlinux.sys
   ignore_errors: true
   changed_when: false
   register: bootloader_installed
 
 - name: install the syslinux bootloader
   sudo: true
-  command: /usr/bin/extlinux --install {{ bootstrap_mount_point }}/boot/syslinux
+  command: /usr/bin/extlinux --install {{ build_mount_point }}/boot/syslinux
   when: bootloader_installed | failed
 
 - name: update the syslinux bootloader
   sudo: true
-  command: /usr/bin/extlinux --update {{ bootstrap_mount_point }}/boot/syslinux
+  command: /usr/bin/extlinux --update {{ build_mount_point }}/boot/syslinux
   when: bootloader_installed | success
 
 # http://www.syslinux.org/wiki/index.php/Mbr
 - name: install the master boot record
   sudo: true
-  command: /usr/bin/dd bs=440 count=1 conv=notrunc if=/usr/lib/syslinux/bios/gptmbr.bin of={{ bootstrap_build_disk }}
+  command: /usr/bin/dd bs=440 count=1 conv=notrunc if=/usr/lib/syslinux/bios/gptmbr.bin of={{ build_disk }}
   when: bootloader_installed | failed
 
 # http://www.syslinux.org/wiki/index.php/Comboot_API
 # http://www.syslinux.org/wiki/index.php/Library_modules
 - name: copy the menu.c32 comboot module and its dependencies
   sudo: true
-  command: cp /usr/lib/syslinux/bios/{{ item }} {{ bootstrap_mount_point }}/boot/syslinux
+  command: /usr/bin/install -o root -g root -m 0644 /usr/lib/syslinux/bios/{{ item }} {{ build_mount_point }}/boot/syslinux
   with_items:
     - menu.c32
     - libutil.c32
 
 - name: add the syslinux configuration file
   sudo: true
-  copy: src=syslinux.cfg dest={{ bootstrap_mount_point }}/boot/syslinux/syslinux.cfg
+  copy: src=syslinux.cfg dest={{ build_mount_point }}/boot/syslinux/syslinux.cfg
     owner=root group=root mode=0644
