@@ -1,12 +1,22 @@
 ---
 
-kernel_version: 3.14.2
-kernel_mirror: "https://www.kernel.org/pub/linux/kernel/v3.x"
-kernel_filename: "linux-{{ kernel_version }}.tar.xz"
-kernel_dir: "/usr/local/src"
-kernel_image: "{{ kernel_dir }}/linux-{{ kernel_version }}/arch/x86/boot/bzImage"
-
 build_disk: "/dev/sdb"
 build_root_partition: "{{ build_disk }}1"
 build_mount_point: "/mnt"
 build_mount_options: "noatime,errors=remount-ro"
+
+src_dir: "/usr/local/src"
+
+kernel_version: 3.14.2
+kernel_mirror: "https://www.kernel.org/pub/linux/kernel/v3.x"
+kernel_filename: "linux-{{ kernel_version }}.tar.xz"
+kernel_dir: "{{ src_dir }}/linux-{{ kernel_version }}"
+kernel_image: "{{ kernel_dir }}/arch/x86/boot/bzImage"
+
+busybox_version: 1.22.1
+busybox_mirror: "http://busybox.net/downloads"
+busybox_filename: "busybox-{{ busybox_version }}.tar.bz2"
+busybox_dir: "{{ src_dir }}/busybox-{{ busybox_version }}"
+busybox_binary: "{{ busybox_dir }}/busybox"
+
+initramfs_root: "{{ src_dir }}/initramfs"

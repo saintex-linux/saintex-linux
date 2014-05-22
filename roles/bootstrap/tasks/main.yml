@@ -9,6 +9,23 @@
 - include: format.yml tags=format
   when: build_disk_mounted | failed
 
+- name: make the source download directory sticky
+  sudo: true
+  command: /usr/bin/chmod 1777 {{ src_dir }}
+  tags:
+    - kernel
+    - initramfs
+
+- name: count the number of available processing units
+  command: /usr/bin/nproc
+  changed_when: false
+  tags:
+    - kernel
+    - initramfs
+  register: nproc
+
 - include: kernel.yml tags=kernel
-#- include: initramfs.yml tags=initramfs
+
+- include: initramfs.yml tags=initramfs
+
 - include: syslinux.yml tags=syslinux

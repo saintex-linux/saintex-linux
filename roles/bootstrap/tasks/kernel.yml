@@ -12,10 +12,6 @@
     - "{{ base_devel_packages.stdout_lines }}"
     - bc
 
-- name: make the kernel build directory sticky
-  sudo: true
-  command: /usr/bin/chmod 1777 {{ kernel_dir }}
-
 - name: download the latest linux kernel sha256sum
   shell: /usr/bin/curl --silent {{ kernel_mirror }}/sha256sums.asc | awk '/{{ kernel_filename }}/{ print $1 }'
   changed_when: false
@@ -23,11 +19,11 @@
 
 - name: download the latest linux kernel source
   get_url: url={{ kernel_mirror }}/{{ kernel_filename }}
-    dest={{ kernel_dir }}/{{ kernel_filename }} sha256sum={{ kernel_sha256sum.stdout }}
+    dest={{ src_dir }}/{{ kernel_filename }} sha256sum={{ kernel_sha256sum.stdout }}
 
 - name: extract the linux kernel source
-  command: tar -xf {{ kernel_dir }}/{{ kernel_filename }}
-    chdir={{ kernel_dir }} creates={{ kernel_dir }}/linux-{{ kernel_version }}
+  command: tar -xf {{ src_dir }}/{{ kernel_filename }}
+    chdir={{ src_dir }} creates={{ kernel_dir }}
 
 - name: check for existing compiled kernel
   command: /usr/bin/test -f {{ kernel_image }}
@@ -35,27 +31,21 @@
   changed_when: false
   register: kernel_compiled
 
-- name: remove all generated files + config + various backup files
+- name: remove the linux kernel non-source files
   command: /usr/bin/make --silent mrproper
-    chdir={{ kernel_dir }}/linux-{{ kernel_version }}
+    chdir={{ kernel_dir }}
   when: kernel_compiled | failed
 
 - name: generate the default kernel configuration
   command: /usr/bin/make --silent defconfig
-    chdir={{ kernel_dir }}/linux-{{ kernel_version }}
-  when: kernel_compiled | failed
-
-- name: count the number of available processing units
-  command: /usr/bin/nproc
-  changed_when: false
-  register: nproc
+    chdir={{ kernel_dir }}
   when: kernel_compiled | failed
 
 - name: compile the linux kernel
   command: /usr/bin/make --jobs={{ nproc.stdout }} --silent
-    chdir={{ kernel_dir }}/linux-{{ kernel_version }}
+    chdir={{ kernel_dir }}
   when: kernel_compiled | failed
 
 - name: copy the linux kernel to the build disk
   sudo: true
-  command: /usr/bin/install -o root -g root -m 0644 {{ kernel_image }} {{ build_mount_point }}/boot/vmlinuz-linux
+  command: /usr/bin/install -D -o root -g root -m 0644 {{ kernel_image }} {{ build_mount_point }}/boot/vmlinuz-linux
