@@ -1,0 +1,7 @@
+---
+
+runit_version: 2.1.1
+runit_mirror: "http://smarden.org/runit"
+runit_filename: "runit-{{ runit_version }}.tar.gz"
+runit_dir: "{{ src_dir }}/admin/runit-{{ runit_version }}"
+runit_service_dir: "/service"

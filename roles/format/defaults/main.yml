@@ -1,0 +1,6 @@
+---
+
+build_disk: "/dev/sdb"
+build_root_partition: "{{ build_disk }}1"
+build_mount_point: "/mnt"
+build_mount_options: "noatime,errors=remount-ro"

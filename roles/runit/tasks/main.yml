@@ -1,0 +1,48 @@
+---
+
+- name: download the latest runit source
+  get_url: url={{ runit_mirror }}/{{ runit_filename }}
+    dest={{ src_dir }}/{{ runit_filename }}
+
+- name: extract the runit source
+  command: tar -xf {{ src_dir }}/{{ runit_filename }}
+    chdir={{ src_dir }} creates={{ runit_dir }}
+
+- name: compile the runit binaries
+  shell: package/compile &> /dev/null
+    chdir={{ runit_dir }}
+
+- name: create the runit directories
+  sudo: true
+  file: path={{ build_mount_point }}/{{ item }} state=directory
+    owner=root group=root mode=0755
+  with_items:
+    - /etc/runit
+    - /etc/sv
+    - "{{ runit_service_dir }}"
+
+- name: copy the runit init scripts
+  sudo: true
+  template: src={{ item }}.j2 dest={{ build_mount_point }}/etc/runit/{{ item }}
+    owner=root group=root mode=0755
+  with_items: [ 1, 2, 3, ctrlaltdel ]
+
+- name: copy the runit binaries to the build disk
+  sudo: true
+  command: /usr/bin/install -D -o root -g root -m 0755 {{ item }} {{ build_mount_point }}/usr/bin/{{ item }}
+    chdir={{ runit_dir }}/command
+  with_items:
+    - chpst
+    - runit
+    - runit-init
+    - runsv
+    - runsvchdir
+    - runsvdir
+    - sv
+    - svlogd
+    - utmpset
+
+- name: link the system init to runit-init
+  sudo: true
+  file: src=../usr/bin/runit-init dest={{ build_mount_point }}/etc/init force=yes state=link
+    owner=root group=root mode=0755

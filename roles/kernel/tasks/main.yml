@@ -1,5 +1,10 @@
 ---
 
+- name: count the number of available processing units
+  command: /usr/bin/nproc
+  changed_when: false
+  register: nproc
+
 - name: determine which packages are in the base-devel group
   command: /usr/bin/pacman --query --groups --quiet base-devel
   changed_when: false

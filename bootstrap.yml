@@ -4,4 +4,10 @@
   gather_facts: false
   roles:
     - { role: python, tags: python }
-    - { role: bootstrap, tags: bootstrap }
+    - { role: format, tags: format }
+    - { role: kernel, tags: kernel }
+    - { role: initramfs, tags: initramfs }
+    - { role: syslinux, tags: syslinux }
+    - { role: rootfs, tags: rootfs }
+  vars:
+    src_dir: "/usr/local/src"

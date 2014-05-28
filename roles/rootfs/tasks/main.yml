@@ -1,0 +1,14 @@
+---
+
+####
+# temporary measure to make sure booting to the rootfs works
+- name: copy the busybox binary into the initramfs
+  sudo: true
+  command: /usr/bin/install -D -o root -g root -m 0755 {{ busybox_binary }} {{ build_mount_point }}/usr/bin/busybox
+
+- name: create the busybox function symlinks
+  sudo: true
+  file: src=busybox dest={{ build_mount_point }}/usr/bin/{{ item }} state=link
+    owner=root group=root mode=0755
+  with_items: "{{ busybox_functions.stdout_lines }}"
+####

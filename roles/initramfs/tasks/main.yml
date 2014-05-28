@@ -10,34 +10,6 @@
     - sys
     - usr/bin
 
-- name: download the latest busybox source
-  get_url: url={{ busybox_mirror }}/{{ busybox_filename }}
-    dest={{ src_dir }}/{{ busybox_filename }}
-
-- name: extract the busybox source
-  command: tar -xf {{ src_dir }}/{{ busybox_filename }}
-    chdir={{ src_dir }} creates={{ busybox_dir }}
-
-- name: check for an existing compiled busybox binary
-  command: /usr/bin/test -f {{ busybox_binary }}
-  ignore_errors: true
-  changed_when: false
-  register: busybox_compiled
-
-- name: remove the busybox non-source files
-  command: /usr/bin/make --silent distclean
-    chdir={{ busybox_dir }}
-  when: busybox_compiled | failed
-
-- name: copy the minimal busybox configuration
-  copy: src=busybox.config dest={{ busybox_dir }}/.config
-  when: busybox_compiled | failed
-
-- name: compile the busybox static binary
-  command: /usr/bin/make --jobs={{ nproc.stdout }} --silent
-    chdir={{ busybox_dir }}
-  when: busybox_compiled | failed
-
 - name: copy the busybox binary into the initramfs
   sudo: true
   command: /usr/bin/install -D -o root -g root -m 0755 {{ busybox_binary }} {{ initramfs_root }}/usr/bin/busybox
@@ -55,7 +27,7 @@
 
 - name: copy the init script into the initramfs
   sudo: true
-  copy: src=initramfs.init dest={{ initramfs_root }}/init
+  copy: src=init dest={{ initramfs_root }}/init
     owner=root group=root mode=0755
 
 - name: create the initramfs console device special file
