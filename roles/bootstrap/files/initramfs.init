@@ -1,5 +1,57 @@
-#!/usr/bin/ash
+#!/usr/bin/ash -x
 
-mount -t proc none /proc
-mount -t sysfs none /sys
-/usr/bin/ash
+export PATH='/usr/bin'
+
+init='/etc/init'
+root='/dev/sda1'
+rootfstype='auto'
+ro='rw'
+rootflags='noatime'
+
+mount -t devtmpfs devtmpfs /dev
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+
+read -r cmdline < /proc/cmdline
+
+# https://www.kernel.org/doc/Documentation/kernel-parameters.txt
+for param in $cmdline ; do
+  case $param in
+    init=*) init=${param#init=} ;;
+    root=*) root=${param#root=} ;;
+    rootfstype=*) rootfstype=${param#rootfstype=} ;;
+    rootflags=*) rootflags=${param#rootflags=} ;;
+    ro) ro='ro' ;;
+    rw) ro='rw' ;;
+  esac
+done
+
+mdev -s
+
+[ -n "$rootflags" ] && rootflags="${rootflags},"
+rootflags="${rootflags}${ro}"
+
+while [ ! -b "$root" ]; do
+  printf 'the specified root filesystem device does not exist: %s\n' "$root"
+  printf '...dropping into a shell\n\n' "$root"
+  ash
+done
+
+mkdir /newroot
+if ! mount -t "$rootfstype" -o "$rootflags" "$root" /newroot; then
+  printf 'could not mount the specified root device with the command:\n'
+  printf '    mount -t %s -o %s %s /newroot\n' "$rootfstype" "$rootflags" "$root"
+  printf '...dropping into a shell\n\n' "$root"
+  ash
+fi
+
+if [ -x "/newroot${init}" ]; then
+  # unmount the temporary mount points so the resources used by initramfs can
+  # be cleared after switch_root
+  umount /proc /sys
+  exec switch_root /newroot "$init" "$@"
+else
+  printf 'cannot switch_root; the specified init binary is not executable: /newroot%s\n' "$init"
+  printf '...dropping into a shell\n\n' "$root"
+  exec ash
+fi

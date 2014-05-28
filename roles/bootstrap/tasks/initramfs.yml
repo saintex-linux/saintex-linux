@@ -51,7 +51,7 @@
   sudo: true
   file: src=busybox dest={{ initramfs_root }}/usr/bin/{{ item }} state=link
     owner=root group=root mode=0755
-  with_items: busybox_functions.stdout_lines
+  with_items: "{{ busybox_functions.stdout_lines }}"
 
 - name: copy the init script into the initramfs
   sudo: true

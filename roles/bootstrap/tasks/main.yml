@@ -29,3 +29,5 @@
 - include: initramfs.yml tags=initramfs
 
 - include: syslinux.yml tags=syslinux
+
+- include: rootfs.yml tags=rootfs
