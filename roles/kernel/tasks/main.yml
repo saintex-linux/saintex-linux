@@ -1,36 +1,26 @@
 ---
 
-- name: count the number of available processing units
-  command: /usr/bin/nproc
-  changed_when: false
-  register: nproc
-
-- name: determine which packages are in the base-devel group
-  command: /usr/bin/pacman --query --groups --quiet base-devel
-  changed_when: false
-  register: base_devel_packages
-
 - name: install the kernel make dependency packages
   sudo: true
   pacman: name={{ item }} state=present
   with_items:
-    - "{{ base_devel_packages.stdout_lines }}"
     - bc
 
 - name: download the latest linux kernel sha256sum
-  shell: /usr/bin/curl --silent {{ kernel_mirror }}/sha256sums.asc | awk '/{{ kernel_filename }}/{ print $1 }'
+  shell: /usr/bin/curl --silent https://www.kernel.org/pub/linux/kernel/v3.x/sha256sums.asc | awk '/linux-{{ kernel_version }}.tar.xz/{ print $1 }'
   changed_when: false
   register: kernel_sha256sum
 
 - name: download the latest linux kernel source
-  get_url: url={{ kernel_mirror }}/{{ kernel_filename }}
-    dest={{ src_dir }}/{{ kernel_filename }} sha256sum={{ kernel_sha256sum.stdout }}
+  get_url: url=https://www.kernel.org/pub/linux/kernel/v3.x/linux-{{ kernel_version }}.tar.xz
+    dest={{ src_dir }}/linux-{{ kernel_version }}.tar.xz
+    sha256sum={{ kernel_sha256sum.stdout }}
 
 - name: extract the linux kernel source
-  command: tar -xf {{ src_dir }}/{{ kernel_filename }}
-    chdir={{ src_dir }} creates={{ kernel_dir }}
+  command: tar -xf linux-{{ kernel_version }}.tar.xz
+    chdir={{ src_dir }} creates=linux-{{ kernel_version }}
 
-- name: check for existing compiled kernel
+- name: check for an existing compiled kernel
   command: /usr/bin/test -f {{ kernel_image }}
   ignore_errors: true
   changed_when: false
@@ -38,19 +28,15 @@
 
 - name: remove the linux kernel non-source files
   command: /usr/bin/make --silent mrproper
-    chdir={{ kernel_dir }}
+    chdir={{ src_dir }}/linux-{{ kernel_version }}
   when: kernel_compiled | failed
 
 - name: generate the default kernel configuration
   command: /usr/bin/make --silent defconfig
-    chdir={{ kernel_dir }}
+    chdir={{ src_dir }}/linux-{{ kernel_version }}
   when: kernel_compiled | failed
 
 - name: compile the linux kernel
   command: /usr/bin/make --jobs={{ nproc.stdout }} --silent
-    chdir={{ kernel_dir }}
+    chdir={{ src_dir }}/linux-{{ kernel_version }}
   when: kernel_compiled | failed
-
-- name: copy the linux kernel to the build disk
-  sudo: true
-  command: /usr/bin/install -D -o root -g root -m 0644 {{ kernel_image }} {{ build_mount_point }}/boot/vmlinuz-linux

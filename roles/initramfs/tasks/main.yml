@@ -23,7 +23,7 @@
   sudo: true
   file: src=busybox dest={{ initramfs_root }}/usr/bin/{{ item }} state=link
     owner=root group=root mode=0755
-  with_items: "{{ busybox_functions.stdout_lines }}"
+  with_items: busybox_functions.stdout_lines
 
 - name: copy the init script into the initramfs
   sudo: true
@@ -37,10 +37,5 @@
 
 - name: create the compressed initramfs archive
   sudo: true
-  shell: /usr/bin/find . | /usr/bin/bsdcpio -o -H newc | /usr/bin/xz --check=crc32 --lzma2=dict=512KiB > ../initramfs.cpio.xz
-    chdir={{ initramfs_root }}
-
-- name: copy the initramfs archive to the build disk
-  sudo: true
-  command: /usr/bin/install -D -o root -g root -m 0644 ../initramfs.cpio.xz {{ build_mount_point }}/boot/initramfs-linux.img
+  shell: /usr/bin/find . | /usr/bin/bsdcpio -o -H newc | /usr/bin/xz --check=crc32 --lzma2=dict=512KiB > {{ src_dir }}/initramfs.cpio.xz
     chdir={{ initramfs_root }}

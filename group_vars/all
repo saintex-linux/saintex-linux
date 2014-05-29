@@ -1,0 +1,16 @@
+---
+
+busybox_binary: "{{ src_dir }}/busybox-{{ busybox_version }}/busybox"
+
+kernel_image: "{{ src_dir }}/linux-{{ kernel_version }}/arch/x86/boot/bzImage"
+
+runit_binaries:
+  - chpst
+  - runit
+  - runit-init
+  - runsv
+  - runsvchdir
+  - runsvdir
+  - sv
+  - svlogd
+  - utmpset

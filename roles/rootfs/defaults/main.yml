@@ -1,0 +1,5 @@
+---
+
+rootfs_device: /dev/sdb
+rootfs_mount_point: /mnt
+rootfs_mount_options: "noatime,errors=remount-ro"

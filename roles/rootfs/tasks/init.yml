@@ -1,0 +1,31 @@
+---
+
+- name: create the runit directories
+  sudo: true
+  file: path={{ rootfs_mount_point }}/{{ item }} state=directory
+    owner=root group=root mode=0755
+  with_items:
+    - /etc/runit
+    - /etc/service
+    - /etc/sv
+
+- name: copy the runit init scripts
+  sudo: true
+  copy: src=rootfs/etc/runit/{{ item }} dest={{ rootfs_mount_point }}/etc/runit/{{ item }}
+    owner=root group=root mode=0755
+  with_items:
+    - "1"
+    - "2"
+    - "3"
+    - ctrlaltdel
+
+- name: copy the runit binaries to the rootfs device
+  sudo: true
+  command: /usr/bin/install -D -o root -g root -m 0755 {{ item }} {{ rootfs_mount_point }}/usr/bin/{{ item }}
+    chdir={{ src_dir }}/runit-{{ runit_version }}/command
+  with_items: runit_binaries
+
+- name: link the system init to runit-init
+  sudo: true
+  file: src=../usr/bin/runit-init dest={{ rootfs_mount_point }}/etc/init force=yes state=link
+    owner=root group=root mode=0755

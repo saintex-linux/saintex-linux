@@ -1,4 +1,6 @@
 ---
 
 dependencies:
-  - { role: runit, tags: runit }
+  - { role: initramfs, tags: [initramfs] }
+  - { role: kernel, tags: [kernel] }
+  - { role: runit, tags: [runit] }

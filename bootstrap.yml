@@ -2,12 +2,15 @@
 
 - hosts: bootstrap
   gather_facts: false
+  pre_tasks:
+    - # Python 2 is a dependency for Ansible to function.
+      name: install the python2 package
+      sudo: true
+      raw: command -v python2 || pacman -Sy --noconfirm python2
   roles:
-    - { role: python, tags: python }
-    - { role: format, tags: format }
-    - { role: kernel, tags: kernel }
-    - { role: initramfs, tags: initramfs }
-    - { role: syslinux, tags: syslinux }
-    - { role: rootfs, tags: rootfs }
+    - role: rootfs
+      tags: [rootfs]
   vars:
-    src_dir: "/usr/local/src"
+    busybox_version: "1.22.1"
+    kernel_version: "3.14.2"
+    runit_version: "2.1.1"

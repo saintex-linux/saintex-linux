@@ -1,0 +1,44 @@
+---
+
+- name: install the gptfdisk package
+  sudo: true
+  pacman: name=gptfdisk state=present
+
+- name: clear the partition table on the rootfs device
+  sudo: true
+  command: /usr/bin/sgdisk --zap {{ rootfs_device }}
+
+- name: zero out the beginning of the rootfs device
+  sudo: true
+  command: /usr/bin/dd bs=512 count=2048 if=/dev/zero of={{ rootfs_device }}
+
+- name: erase magic strings from the rootfs device
+  sudo: true
+  command: /usr/bin/wipefs --all {{ rootfs_device }}
+
+- name: create the root partition on the rootfs device
+  sudo: true
+  command: /usr/bin/sgdisk --new=1:0:0 {{ rootfs_device }}
+
+- name: set the rootfs device to be bootable
+  sudo: true
+  command: /usr/bin/sgdisk --attributes=1:set:2 {{ rootfs_device }}
+
+# if you're reformatting the rootfs device, the kernel can undesirably auto-mount
+# it during the previous task due to referencing the old partition table; this
+# task makes sure we are able to wipe out all of the existing data
+- name: ensure the rootfs device is unmounted
+  sudo: true
+  mount: name={{ rootfs_mount_point }} src={{ rootfs_device }}1 state=unmounted
+    fstype=ext4 opts={{ rootfs_mount_options }}
+
+- name: create the root filesystem on the rootfs device
+  sudo: true
+  command: /usr/bin/mkfs.ext4 -F -m 0 -q -L root {{ rootfs_device }}1
+
+# an /etc/fstab entry is created so the VM can be rebooted without losing
+# changes made to the rootfs device (i.e. these format.yml tasks will be skipped)
+- name: mount the rootfs device
+  sudo: true
+  mount: name={{ rootfs_mount_point }} src={{ rootfs_device }}1 state=mounted
+    fstype=ext4 opts={{ rootfs_mount_options }}

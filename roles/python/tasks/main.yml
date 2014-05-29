@@ -1,5 +1,0 @@
----
-
-- name: install the python2 package
-  sudo: true
-  raw: command -v python2 >/dev/null || pacman -Sy --noconfirm python2

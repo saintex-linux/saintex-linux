@@ -1,0 +1,21 @@
+---
+
+- name: determine the base-devel group packages
+  command: /usr/bin/pacman --query --groups --quiet base-devel
+  changed_when: false
+  register: base_devel_packages
+
+- name: install the base-devel packages
+  sudo: true
+  pacman: name={{ item }} state=present
+  with_items: base_devel_packages.stdout_lines
+
+- name: create the directory for building software
+  sudo: true
+  file: path={{ src_dir }} state=directory
+    owner={{ ansible_ssh_user }} group=users mode=0755
+
+- name: count the number of available processing units
+  command: /usr/bin/nproc
+  changed_when: false
+  register: nproc

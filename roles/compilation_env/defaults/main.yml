@@ -1,0 +1,4 @@
+---
+
+# the location to download and compile any required software
+src_dir: "/home/{{ ansible_ssh_user }}/src"

@@ -1,7 +1,0 @@
----
-
-kernel_version: 3.14.2
-kernel_mirror: "https://www.kernel.org/pub/linux/kernel/v3.x"
-kernel_filename: "linux-{{ kernel_version }}.tar.xz"
-kernel_dir: "{{ src_dir }}/linux-{{ kernel_version }}"
-kernel_image: "{{ kernel_dir }}/arch/x86/boot/bzImage"
