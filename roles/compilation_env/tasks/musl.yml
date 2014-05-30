@@ -1,22 +1,30 @@
 ---
 # Install the musl standard C/POSIX library and extensions.
 
-- name: create the musl build directory
-  file: path={{ src_dir }}/musl state=directory
-    owner={{ ansible_ssh_user }} group=users mode=0755
+- name: download the musl source code
+  get_url: url=http://www.musl-libc.org/releases/musl-{{ musl_version }}.tar.gz
+    dest={{ src_dir }}/musl-{{ musl_version }}.tar.gz
+  register: downloaded_musl
 
-- name: copy the musl pkgbuild file
-  template: src=musl.PKGBUILD.j2 dest={{ src_dir }}/musl/PKGBUILD
-    owner={{ ansible_ssh_user }} group=users mode=0644
-  register: musl_pkgbuild
+- name: extract the musl source code
+  command: tar -xf musl-{{ musl_version }}.tar.gz
+    chdir={{ src_dir }} creates=musl-{{ musl_version }}
 
-- name: build the musl package
-  command: /usr/bin/makepkg --force --syncdeps --clean --noconfirm
-    chdir={{ src_dir }}/musl
-  when: musl_pkgbuild.changed
+- name: configure the musl build options
+  command: ./configure --disable-shared
+    chdir={{ src_dir }}/musl-{{ musl_version }}
+  environment:
+    # http://git.musl-libc.org/cgit/musl/tree/configure#n499
+    CFLAGS: "-fno-toplevel-reorder"
+  when: downloaded_musl.changed
 
-- name: install the musl package
+- name: compile the musl library and extensions
+  command: make
+    chdir={{ src_dir }}/musl-{{ musl_version }}
+  when: downloaded_musl.changed
+
+- name: install musl under /usr/local/musl
   sudo: true
-  command: /usr/bin/pacman --upgrade --noconfirm musl-{{ musl_version }}-1-x86_64.pkg.tar.xz
-    chdir={{ src_dir }}/musl
-  when: musl_pkgbuild.changed
+  command: make install
+    chdir={{ src_dir }}/musl-{{ musl_version }}
+  when: downloaded_musl.changed
