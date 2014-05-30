@@ -20,3 +20,5 @@
   command: /usr/bin/nproc
   changed_when: false
   register: nproc
+
+- include: musl.yml tags=musl
