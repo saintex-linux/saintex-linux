@@ -1,11 +1,11 @@
 ---
 # Compile the BusyBox static binary.
 
-- name: download the latest busybox source
+- name: download the busybox source code
   get_url: url=http://busybox.net/downloads/busybox-{{ busybox_version }}.tar.bz2
     dest={{ src_dir }}/busybox-{{ busybox_version }}.tar.bz2
 
-- name: extract the busybox source
+- name: extract the busybox source code
   command: tar -xf busybox-{{ busybox_version }}.tar.bz2
     chdir={{ src_dir }} creates=busybox-{{ busybox_version }}
 

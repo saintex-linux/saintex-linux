@@ -1,11 +1,11 @@
 ---
 # Compile the runit binaries.
 
-- name: download the latest runit source
+- name: download the latest runit source code
   get_url: url=http://smarden.org/runit/runit-{{ runit_version }}.tar.gz
     dest={{ src_dir }}/runit-{{ runit_version }}.tar.gz
 
-- name: extract the runit source
+- name: extract the runit source code
   command: tar -x --strip-components 1 -f runit-{{ runit_version }}.tar.gz
     chdir={{ src_dir }} creates=runit-{{ runit_version }}
 

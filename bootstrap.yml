@@ -8,8 +8,7 @@
       sudo: true
       raw: command -v python2 || pacman -Sy --noconfirm python2
   roles:
-    - role: rootfs
-      tags: [rootfs]
+    - rootfs
   vars:
     busybox_version: "1.22.1"
     kernel_version: "3.14.2"
