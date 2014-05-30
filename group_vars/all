@@ -1,16 +1,19 @@
 ---
 
+# the absolute path to the compiled busybox binary
 busybox_binary: "{{ src_dir }}/busybox-{{ busybox_version }}/busybox"
 
-kernel_image: "{{ src_dir }}/linux-{{ kernel_version }}/arch/x86/boot/bzImage"
+# the absolute path to the compiled linux kernel bzimage
+kernel_bzimage: "{{ src_dir }}/linux-{{ kernel_version }}/arch/x86/boot/bzImage"
 
+# list of the absolute paths to the compiled runit binaries
 runit_binaries:
-  - chpst
-  - runit
-  - runit-init
-  - runsv
-  - runsvchdir
-  - runsvdir
-  - sv
-  - svlogd
-  - utmpset
+  - "{{ src_dir }}/runit-{{ runit_version }}/command/chpst"
+  - "{{ src_dir }}/runit-{{ runit_version }}/command/runit"
+  - "{{ src_dir }}/runit-{{ runit_version }}/command/runit-init"
+  - "{{ src_dir }}/runit-{{ runit_version }}/command/runsv"
+  - "{{ src_dir }}/runit-{{ runit_version }}/command/runsvchdir"
+  - "{{ src_dir }}/runit-{{ runit_version }}/command/runsvdir"
+  - "{{ src_dir }}/runit-{{ runit_version }}/command/sv"
+  - "{{ src_dir }}/runit-{{ runit_version }}/command/svlogd"
+  - "{{ src_dir }}/runit-{{ runit_version }}/command/utmpset"

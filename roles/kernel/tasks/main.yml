@@ -1,4 +1,5 @@
 ---
+# Compile the Linux kernel bzImage.
 
 - name: install the kernel make dependency packages
   sudo: true
@@ -21,7 +22,7 @@
     chdir={{ src_dir }} creates=linux-{{ kernel_version }}
 
 - name: check for an existing compiled kernel
-  command: /usr/bin/test -f {{ kernel_image }}
+  command: /usr/bin/test -f {{ kernel_bzimage }}
   ignore_errors: true
   changed_when: false
   register: kernel_compiled

@@ -1,4 +1,5 @@
 ---
+# Set up the environment for compiling software.
 
 - name: determine the base-devel group packages
   command: /usr/bin/pacman --query --groups --quiet base-devel

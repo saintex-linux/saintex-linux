@@ -1,4 +1,5 @@
 ---
+# Build the entire Saintex Linux root file system on the mounted disk.
 
 - name: create the runit directories
   sudo: true
@@ -22,7 +23,6 @@
 - name: copy the runit binaries to the rootfs device
   sudo: true
   command: /usr/bin/install -D -o root -g root -m 0755 {{ item }} {{ rootfs_mount_point }}/usr/bin/{{ item }}
-    chdir={{ src_dir }}/runit-{{ runit_version }}/command
   with_items: runit_binaries
 
 - name: link the system init to runit-init

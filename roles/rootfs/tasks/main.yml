@@ -28,7 +28,7 @@
 
 - name: copy the linux kernel to the rootfs device
   sudo: true
-  command: /usr/bin/install -D -o root -g root -m 0644 {{ kernel_image }} {{ rootfs_mount_point }}/boot/vmlinuz-linux
+  command: /usr/bin/install -D -o root -g root -m 0644 {{ kernel_bzimage }} {{ rootfs_mount_point }}/boot/vmlinuz-linux
 
 - include: syslinux.yml tags=syslinux
 - include: init.yml tags=init

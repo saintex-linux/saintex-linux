@@ -1,4 +1,5 @@
 ---
+# Generate a cpio archive of the initial RAM file system.
 
 - name: create the initramfs staging directories
   sudo: true

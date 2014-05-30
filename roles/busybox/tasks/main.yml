@@ -1,4 +1,5 @@
 ---
+# Compile the BusyBox static binary.
 
 - name: download the latest busybox source
   get_url: url=http://busybox.net/downloads/busybox-{{ busybox_version }}.tar.bz2

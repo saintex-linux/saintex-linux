@@ -1,4 +1,5 @@
 ---
+# Compile the runit binaries.
 
 - name: download the latest runit source
   get_url: url=http://smarden.org/runit/runit-{{ runit_version }}.tar.gz
