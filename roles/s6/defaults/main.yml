@@ -1,0 +1,5 @@
+---
+
+# the location of the slashpackage directory
+slashpackage_prefix: "{{ src_dir }}/s6"
+slashpackage: "{{ slashpackage_prefix }}/package"

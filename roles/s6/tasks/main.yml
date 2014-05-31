@@ -1,0 +1,15 @@
+---
+# Compile the s6 binaries.
+
+# http://cr.yp.to/slashpackage.html
+- name: create a slashpackage directory
+  file: path={{ slashpackage }} state=directory
+    owner={{ ansible_ssh_user }} group=users mode=0755
+
+- name: create a slashpackage global config directory
+  file: path={{ slashpackage_prefix }}/etc state=directory
+    owner={{ ansible_ssh_user }} group=users mode=0755
+
+- include: skalibs.yml tags=skalibs
+- include: execline.yml tags=execline
+- include: s6.yml

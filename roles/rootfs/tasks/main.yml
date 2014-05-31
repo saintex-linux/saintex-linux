@@ -1,4 +1,5 @@
 ---
+# Build the entire Saintex Linux root file system on the mounted disk.
 
 - name: check the status of the rootfs mount point
   command: /usr/bin/mountpoint -q {{ rootfs_mount_point }}

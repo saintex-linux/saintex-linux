@@ -1,0 +1,3 @@
+/usr/local/musl/bin/musl-gcc
+
+This will be used to link .o files into a .so shared library.
