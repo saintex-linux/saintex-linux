@@ -41,5 +41,5 @@
 
 - name: add the syslinux configuration file
   sudo: true
-  copy: src=rootfs/boot/syslinux/syslinux.cfg dest={{ rootfs_mount_point }}/boot/syslinux/syslinux.cfg
+  copy: src=syslinux.cfg dest={{ rootfs_mount_point }}/boot/syslinux/syslinux.cfg
     owner=root group=root mode=0644

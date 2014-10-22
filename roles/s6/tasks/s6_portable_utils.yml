@@ -1,0 +1,35 @@
+---
+# Compile the s6-portable-utils binaries.
+
+- name: download the latest s6-portable-utils source code
+  get_url: url=http://skarnet.org/software/s6-portable-utils/s6-portable-utils-{{ s6_portable_utils_version }}.tar.gz
+    dest={{ slashpackage }}/s6-portable-utils-{{ s6_portable_utils_version }}.tar.gz
+
+- name: extract the s6-portable-utils source code
+  command: tar -xf s6-portable-utils-{{ s6_portable_utils_version }}.tar.gz
+    chdir={{ slashpackage }} creates=admin/s6-portable-utils-{{ s6_portable_utils_version }}
+
+- name: update compilation configs to use musl libc
+  copy: src={{ item }} dest={{ slashpackage }}/admin/s6-portable-utils-{{ s6_portable_utils_version }}/conf-compile/{{ item }}
+    owner={{ ansible_ssh_user }} group=users mode=0644
+  with_items:
+    - conf-cc
+    - conf-dynld
+    - conf-ld
+
+- name: set the search path root to our slashpackage directory
+  copy: content={{ slashpackage_prefix }}
+    dest={{ slashpackage }}/admin/s6-portable-utils-{{ s6_portable_utils_version }}/conf-compile/conf-sp_root
+    owner={{ ansible_ssh_user }} group=users mode=0644
+
+- name: set the allstatic compilation flag
+  file: path={{ slashpackage }}/admin/s6-portable-utils-{{ s6_portable_utils_version }}/conf-compile/flag-allstatic state=touch
+    owner={{ ansible_ssh_user }} group=users mode=0644
+
+- name: compile the s6-portable-utils binaries
+  command: make
+    chdir={{ slashpackage }}/admin/s6-portable-utils-{{ s6_portable_utils_version }}
+
+- name: install the s6-portable-utils binaries
+  command: make install
+    chdir={{ slashpackage }}/admin/s6-portable-utils-{{ s6_portable_utils_version }}

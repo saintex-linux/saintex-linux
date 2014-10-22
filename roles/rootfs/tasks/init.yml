@@ -1,3 +1,50 @@
 ---
 # Configure the Saintex Linux init scripts
 
+- name: determine the s6 and execline commands
+  command: /usr/bin/find . -mindepth 1
+    chdir={{ slashcommand }}
+  changed_when: false
+  register: s6_commands
+
+- name: copy the static s6 and execline binaries
+  sudo: true
+  command: /usr/bin/install -D -o root -g root -m 0755 {{ item }} {{ rootfs_mount_point }}/usr/bin/{{ item }}
+    chdir={{ slashcommand }}
+  with_items: s6_commands.stdout_lines
+
+- name: create the s6 related directories
+  sudo: true
+  file: path={{ rootfs_mount_point}}/{{ item }} state=directory
+    owner=root group=root mode=0755
+  with_items:
+    - /etc/s6-init
+    - /etc/s6-init/env
+
+- name: copy the s6 init scripts
+  sudo: true
+  copy: src=init/etc/s6-init/{{ item }} dest={{ rootfs_mount_point }}/etc/s6-init/{{ item }}
+    owner=root group=root mode=0755
+  with_items:
+    - crash
+    - init-stage1
+    - init-stage2
+    - init-stage3
+    - network-config
+
+- name: create the s6 symlinks
+  sudo: true
+  file: src={{ item.src }} dest={{ rootfs_mount_point }}/etc/{{ item.dest }} state=link
+  with_items:
+    - { src: init-stage1, dest: s6-init/init }
+    - { src: s6-init/init, dest: init }
+
+- name: copy the leapsecs.dat file
+  sudo: true
+  copy: src=init/etc/leapsecs.dat dest={{ rootfs_mount_point }}/etc/leapsecs.dat
+    owner=root group=root mode=0644
+
+- name: copy the environment files
+  sudo: true
+  copy: src=init/etc/s6-init/env/ dest={{ rootfs_mount_point }}/etc/s6-init/env/
+    owner=root group=root mode=0644

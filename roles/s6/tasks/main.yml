@@ -12,4 +12,6 @@
 
 - include: skalibs.yml tags=skalibs
 - include: execline.yml tags=execline
+- include: s6_linux_utils.yml tags=s6_linux_utils
+- include: s6_portable_utils.yml tags=s6_portable_utils
 - include: s6.yml

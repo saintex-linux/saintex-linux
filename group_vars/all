@@ -5,3 +5,6 @@ busybox_binary: "{{ src_dir }}/busybox-{{ busybox_version }}/busybox"
 
 # the absolute path to the compiled linux kernel bzimage
 kernel_bzimage: "{{ src_dir }}/linux-{{ kernel_version }}/arch/x86/boot/bzImage"
+
+# the absolute path to the s6 slashcommand directory
+slashcommand: "{{ src_dir }}/s6/command"
