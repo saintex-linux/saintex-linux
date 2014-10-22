@@ -1,0 +1,24 @@
+---
+
+- name: create the mnt related directories
+  sudo: true
+  file: path={{ rootfs_mount_point}}/{{ item }} state=directory
+    owner=root group=root mode=0755
+  with_items:
+    - mnt/
+    - mnt/procfs
+    - mnt/rwfs
+    - mnt/sysfs
+    - mnt/tmpfs
+    - mnt/tmpfs/dev
+    - mnt/tmpfs/tmp
+
+- name: create the mnt symlinks
+  sudo: true
+  file: src={{ item.src }} dest={{ rootfs_mount_point }}/{{ item.dest }} state=link
+  with_items:
+    - { src: mnt/tmpfs/dev, dest: dev }
+    - { src: mnt/procfs, dest: proc }
+    - { src: mnt/sysfs, dest: sys }
+    - { src: mnt/tmpfs/tmp, dest: tmp }
+    - { src: '..', dest: mnt/rofs }

@@ -10,17 +10,6 @@
 - include: format.yml tags=format
   when: rootfs_mounted | failed
 
-- name: create the required root directories
-  sudo: true
-  file: path={{ item }} dest={{ rootfs_mount_point }}/{{ item }} state=directory
-    owner=root group=root mode=0755
-  with_items:
-    - dev
-    - etc
-    - proc
-    - sys
-    - usr
-
 ####
 # temporary measure to make sure booting to the rootfs works
 - name: copy the busybox binary into the initramfs
@@ -44,3 +33,4 @@
 
 - include: syslinux.yml tags=syslinux
 - include: init.yml tags=init
+- include: mounts.yml tags=mounts

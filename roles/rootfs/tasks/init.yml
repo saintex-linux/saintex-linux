@@ -18,8 +18,9 @@
   file: path={{ rootfs_mount_point}}/{{ item }} state=directory
     owner=root group=root mode=0755
   with_items:
-    - /etc/s6-init
-    - /etc/s6-init/env
+    - etc
+    - etc/s6-init
+    - etc/s6-init/env
 
 - name: copy the s6 init scripts
   sudo: true
