@@ -1,0 +1,59 @@
+---
+
+- name: create the img related directories
+  sudo: true
+  file: path={{ rootfs_mount_point}}/{{ item }} state=directory
+    owner=root group=root mode=0755
+  with_items:
+    - img/
+    - img/services-local
+    - img/services-network
+    - img/tmpfs
+    - img/tmpfs/dev
+    - img/tmpfs/dev/pts
+    - img/tmpfs/service
+    - img/tmpfs/service/getty
+    - img/tmpfs/service/s6-svscan-log
+    - img/tmpfs/shm
+    - img/tmpfs/tmp
+    - img/tmpfs/tmp/uncaught-logs
+
+- name: create the img shm symlink
+  sudo: true
+  file: src='../shm' dest={{ rootfs_mount_point }}/img/tmpfs/dev/shm state=link
+
+- name: set the sticky bit on shared directories
+  sudo: true
+  file: path={{ rootfs_mount_point }}/{{ item }} state=directory
+    owner=root group=root mode=1777
+  with_items:
+    - img/tmpfs/shm
+    - img/tmpfs/tmp
+
+- name: set permissions on the catchall log directory
+  sudo: true
+  file: path={{ rootfs_mount_point }}/img/tmpfs/tmp/uncaught-logs state=directory
+    owner=nobody group=nobody mode=2700
+
+- name: create the mnt related directories
+  sudo: true
+  file: path={{ rootfs_mount_point}}/{{ item }} state=directory
+    owner=root group=root mode=0755
+  with_items:
+    - mnt/
+    - mnt/procfs
+    - mnt/rwfs
+    - mnt/sysfs
+    - mnt/tmpfs
+    - mnt/tmpfs/dev
+    - mnt/tmpfs/tmp
+
+- name: create the mnt symlinks
+  sudo: true
+  file: src={{ item.src }} dest={{ rootfs_mount_point }}/{{ item.dest }} state=link
+  with_items:
+    - { src: mnt/tmpfs/dev, dest: dev }
+    - { src: mnt/procfs, dest: proc }
+    - { src: mnt/sysfs, dest: sys }
+    - { src: mnt/tmpfs/tmp, dest: tmp }
+    - { src: '..', dest: mnt/rofs }

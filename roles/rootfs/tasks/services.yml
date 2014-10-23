@@ -1,0 +1,17 @@
+---
+
+- name: create the getty run file
+  sudo: true
+  copy: src=services/getty.run
+    dest={{ rootfs_mount_point }}/img/tmpfs/service/getty/run
+    owner=root group=root mode=0755
+
+- name: create the s6-svscan-log run file
+  sudo: true
+  copy: src=services/s6-svscan-log.run
+    dest={{ rootfs_mount_point }}/img/tmpfs/service/s6-svscan-log/run
+    owner=root group=root mode=0755
+
+- name: create the s6-svscan-log fifo named pipe
+  sudo: true
+  command: /usr/bin/mkfifo --mode=0600 {{ rootfs_mount_point }}/img/tmpfs/service/s6-svscan-log/fifo

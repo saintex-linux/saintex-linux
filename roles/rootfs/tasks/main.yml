@@ -33,4 +33,5 @@
 
 - include: syslinux.yml tags=syslinux
 - include: init.yml tags=init
-- include: mounts.yml tags=mounts
+- include: structure.yml tags=structure
+- include: services.yml tags=services
